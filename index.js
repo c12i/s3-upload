@@ -23,8 +23,8 @@ const storage = multer.memoryStorage({
   },
   filename: (req, file, cb) => {
     const name = file.originalname.split(" ").join("_");
-    const extention = MIME_TYPES[file.mimetype];
-    cb(null, `${name}${v4()}.${extention}`);
+    const extension = MIME_TYPES[file.mimetype];
+    cb(null, `${name}${v4()}.${extension}`);
   },
 });
 
