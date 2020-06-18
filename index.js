@@ -21,7 +21,7 @@ const storage = multer.memoryStorage({
   destination: (req, file, cb) => {
     cb(null, "");
   },
-  filename: (req, file, callback) => {
+  filename: (req, file, cb) => {
     const name = file.originalname.split(" ").join("_");
     const extention = MIME_TYPES[file.mimetype];
     cb(null, `${name}${v4()}.${extention}`);
