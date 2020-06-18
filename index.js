@@ -1,7 +1,8 @@
 const express = require("express");
-const multer = require("multer");
 const AWS = require("aws-sdk");
 const { v4 } = require("uuid");
+
+const { MIME_TYPES, uploadMiddleware } = require("./middleware/multer-config");
 
 // load env variables
 require("dotenv/config");
@@ -9,24 +10,6 @@ const { AWS_ID, AWS_SECRET, AWS_BUCKET_NAME } = process.env;
 
 const app = express();
 const PORT = 8080;
-
-// multer config
-const MIME_TYPES = {
-  "image/jpeg": "jpeg",
-  "image/jpg": "jpg",
-  "image/png": "png",
-  "application/pdf": "pdf",
-  "application/zip": "zip"
-};
-
-const storage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, "");
-  },
-});
-
-// middleware
-const uploadMiddleware = multer({ storage }).single("file");
 
 // instantiate S3
 const s3 = new AWS.S3({
@@ -52,9 +35,7 @@ app.post("/upload", uploadMiddleware, (req, res) => {
         console.error(error);
         throw error.toString();
       }
-
-      // from here you can manipulate the dataobject to save filePath to db
-
+      // data.Location => filepath on s3
       res.status(200).send(data);
     });
   } catch (error) {
