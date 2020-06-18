@@ -15,6 +15,8 @@ const MIME_TYPES = {
   "image/jpeg": "jpeg",
   "image/jpg": "jpg",
   "image/png": "png",
+  "application/pdf": "pdf",
+  "application/zip": "zip"
 };
 
 const storage = multer.memoryStorage({
