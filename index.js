@@ -24,7 +24,7 @@ const storage = multer.memoryStorage({
   filename: (req, file, callback) => {
     const name = file.originalname.split(" ").join("_");
     const extention = MIME_TYPES[file.mimetype];
-    callback(null, `${name}${v4()}.${extention}`);
+    cb(null, `${name}${v4()}.${extention}`);
   },
 });
 
@@ -38,7 +38,7 @@ const s3 = new AWS.S3({
 });
 
 app.post("/upload", uploadMiddleware, (req, res) => {
-  console.log(req.file);
+  console.log(req.file.filename);
   res.send("HELLO");
 });
 
