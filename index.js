@@ -21,25 +21,43 @@ const storage = multer.memoryStorage({
   destination: (req, file, cb) => {
     cb(null, "");
   },
-  filename: (req, file, cb) => {
-    const name = file.originalname.split(" ").join("_");
-    const extension = MIME_TYPES[file.mimetype];
-    cb(null, `${name}${v4()}.${extension}`);
-  },
 });
 
 // middleware
-const uploadMiddleware = multer({ storage }).single("image");
+const uploadMiddleware = multer({ storage }).single("file");
 
 // instantiate S3
 const s3 = new AWS.S3({
-    accessKeyId: AWS_ID,
-    secretAccessKey: AWS_SECRET,
+  accessKeyId: AWS_ID,
+  secretAccessKey: AWS_SECRET,
 });
 
 app.post("/upload", uploadMiddleware, (req, res) => {
-  console.log(req.file.filename);
-  res.send("HELLO");
+  // add filename property to req.file object
+  req.file["filename"] = `${v4()}.${MIME_TYPES[req.file.mimetype]}`;
+
+  // s3.upload options
+  const options = {
+    Bucket: AWS_BUCKET_NAME,
+    Key: req.file.filename,
+    Body: req.file.buffer,
+  };
+
+  try {
+    // upload to s3 bucket
+    s3.upload(options, (error, data) => {
+      if (error) {
+        console.error(error);
+        throw error.toString();
+      }
+
+      // from here you can manipulate the dataobject to save filePath to db
+
+      res.status(200).send(data);
+    });
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 app.listen(PORT, () => {
